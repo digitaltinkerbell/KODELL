@@ -1,0 +1,507 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Kodell xmlns="http://tempuri.org/KodellSchema.xsd">
+  <folder name="index">
+    <folder name="iris">
+      <folder name="iris_binary">
+        <project name="iris_binary0"></project>
+        <project name="iris_binary1"></project>
+        <project name="iris_binary2"></project>
+        <project name="iris_binary3"></project>
+      </folder>
+      <folder name="iris_classify">
+        <project name="iris_classify"></project>
+        <project name="trivial_classify"></project>
+      </folder>
+    </folder>
+    <folder name="image">
+      <folder name="mnist">
+        <folder name="mnist_full">
+          <project name="mnist_full_1"></project>
+          <project name="mnist_full_2"></project>
+          <project name="mnist_full_3"></project>
+        </folder>
+        <folder name="mnist_conv">
+          <project name="mnist_conv_1"></project>
+          <project name="mnist_conv_2"></project>
+        </folder>
+      </folder>
+      <folder name="cifar">
+        <project name="cifar_10_conv_1"></project>
+        <project name="cifar_10_conv_2"></project>
+      </folder>
+    </folder>
+    <folder name="recurrent">
+      <folder name="reber">
+        <project name="reber_simple_1"/>
+      </folder>
+    </folder>
+    <folder name="test">
+      <project name="small_conv_test"></project>
+      <project name="small_recurrent_test"></project>
+    </folder>
+  </folder>
+
+  <projects>
+    <project name="iris_binary0" mode="binary">
+      <dataset source="TestData/iris.csv">
+        <input>
+          <vector size="4"></vector>
+        </input>
+        <output size="1">
+          <filter value="I.setosa">0</filter>
+          <filter value="I.versicolor">1</filter>
+        </output>
+        <split method="random_exclusive" test_ratio="0.2"></split>
+      </dataset>
+      <network_model>
+        <layers>
+          <output act_func="sigmoid" cost_func="cross_entropy" bias="common"/>
+          <full depth="1" width="2" act_func="relu" bias="each"/>
+        </layers>
+      </network_model>
+      <train method="sgd" iterate="1" rate="0.1">
+        <minibatch type="random" size="1"></minibatch>
+        <report type="full" neglist="step_end" period="1000" path="dump/iris_binary1.full.txt"></report>
+        <report type="brief" period="5000" path="dump/iris_binary1.brief.txt"></report>
+        <report poslist="step_start cost result test" period="1000" dest="stdout"></report>
+        <test></test>
+      </train>
+    </project>
+
+    <project name="iris_binary1" mode="binary">
+      <dataset source="TestData/iris.csv">
+        <input>
+          <vector size="4"></vector>
+        </input>
+        <output size="1">
+          <filter value="I.setosa">0</filter>
+          <filter value="I.versicolor">1</filter>
+        </output>
+        <split method="random_exclusive" test_ratio="0.2"></split>
+      </dataset>
+      <network_model>
+        <layers>
+          <output act_func="sigmoid" cost_func="cross_entropy" bias="common"/>
+          <full depth="1" width="2" act_func="relu" bias="each"/>
+        </layers>
+      </network_model>
+      <train method="sgd" iterate="10000" rate="0.1">
+        <minibatch type="random" size="10"></minibatch>
+        <report type="full" neglist="step_end" period="1000" path="dump/iris_binary1.full.txt"></report>
+        <report type="brief" period="5000" path="dump/iris_binary1.brief.txt"></report>
+        <report poslist="step_start cost result test" period="1000" dest="stdout"></report>
+        <test></test>
+      </train>
+      <!--train method="sgd" iterate="10000" rate="0.1">
+        <minibatch type="random" size="10"></minibatch>
+        <report type="full" neglist="step_end" period="1000" path="dump/iris_binary1.full.txt"></report>
+        <report type="brief" period="5000" path="dump/iris_binary1.brief.txt"></report>
+        <report poslist="step_start cost result test" period="1000" dest="stdout"></report>
+        <test></test>
+      </train-->
+    </project>
+
+    <project name="iris_binary2" base="iris_binary1" mode="binary">
+      <dataset source="TestData/iris.csv">
+        <input>
+          <vector size="4"></vector>
+        </input>
+        <output size="1">
+          <filter value="I.versicolor">0</filter>
+          <filter value="I.virginica">1</filter>
+        </output>
+      </dataset>
+      <train method="sgd" iterate="10000" rate="0.1">
+        <minibatch type="random" size="10"></minibatch>
+        <regular type="norm2_decay" dest="all" ratio="0.01"></regular>
+        <report type="full" neglist="step_end" period="1000" path="dump/iris_binary2.full.txt"></report>
+        <report type="brief" period="5000" path="dump/iris_binary2.brief.txt"></report>
+        <report poslist="step_start cost result test" period="1000" dest="stdout"></report>
+        <test></test>
+      </train>
+    </project>
+
+    <project name="iris_binary3" base="iris_binary1" mode="binary">
+      <dataset source="TestData/iris.csv">
+        <input>
+          <vector size="4"></vector>
+        </input>
+        <output size="1">
+          <filter value="I.virginica">0</filter>
+          <filter value="I.setosa">1</filter>
+        </output>
+      </dataset>
+      <train method="sgd" iterate="20000" rate="0.1">
+        <minibatch type="random" size="10"></minibatch>
+        <regular type="norm1_decay" dest="all" ratio="0.01"></regular>
+        <report type="full" neglist="step_end" period="1000" path="dump/iris_binary3.full.txt"></report>
+        <report type="brief" period="5000" path="dump/iris_binary3.brief.txt"></report>
+        <report poslist="step_start cost result test" period="10000" dest="stdout"></report>
+        <test></test>
+      </train>
+    </project>
+
+    <project name="iris_classify" mode="classify">
+      <dataset source="TestData/iris.csv">
+        <input>
+          <vector size="4"></vector>
+        </input>
+        <output size="3">
+          <class value="I.setosa" index="0"></class>
+          <class value="I.versicolor" index="1"></class>
+          <class value="I.virginica" index="2"></class>
+        </output>
+        <split method="random_exclusive" test_ratio="0.2"></split>
+      </dataset>
+      <network_model>
+        <layers>
+          <output act_func="softmax" cost_func="cross_entropy" bias="common"/>
+          <full depth="1" width="3" act_func="relu" bias="each"/>
+        </layers>
+      </network_model>
+      <train method="sgd" iterate="30000" rate="0.01">
+        <!--minibatch type="all"></minibatch-->
+        <minibatch type="random" size="10"></minibatch>
+        <!--regular type="norm2_decay" dest="all" ratio="0.01"></regular-->
+        <report type="full" neglist="step_end" period="1000" path="dump/iris_clasify.full.txt">
+          <!--range from="20000" to="21000" period="100"/>
+          <range from="20600" to="20700" period="10"/>
+          <range from="20620" to="20730" period="1"/-->
+        </report>
+        <report poslist="step_start debug" from="0" to="20" period="1" path="dump/iris_clasify.debug.txt"></report>
+        <!--report type="brief" period="5000" path="dump/iris_classify.brief.txt"></report-->
+        <report poslist="step_start result cost test" period="1000" dest="stdout"></report>
+        <!--test>
+          <validate period="1000" testset="100"></validate>
+        </test-->
+        <test></test>
+      </train>
+    </project>
+
+    <project name="trivial_classify" mode="classify">
+      <dataset source="TestData/iris_trivial.csv">
+        <input>
+          <vector size="4"></vector>
+        </input>
+        <output size="3">
+          <class value="I.setosa" index="0"></class>
+          <class value="I.versicolor" index="1"></class>
+          <class value="I.virginica" index="2"></class>
+        </output>
+        <split method="random_exclusive" test_ratio="0.2"></split>
+      </dataset>
+      <network_model>
+        <layers>
+          <output act_func="softmax" cost_func="cross_entropy" bias="common"/>
+          <full depth="1" width="3" act_func="relu" bias="each"/>
+        </layers>
+      </network_model>
+      <train method="sgd" iterate="50000" rate="0.01">
+        <minibatch type="random" size="10"></minibatch>
+        <!--regular type="norm2_decay" dest="all" ratio="0.01"></regular-->
+        <report type="full" neglist="step_end" period="1000" path="dump/trivial_classify.full.txt">
+          <!--range from="20000" to="21000" period="100"/>
+          <range from="20600" to="20700" period="10"/>
+          <range from="20620" to="20730" period="1"/-->
+        </report>
+        <!--report type="brief" period="5000" path="dump/iris_classify.brief.txt"></report-->
+        <report poslist="step_start result test_result" period="1000" dest="stdout"></report>
+        <test></test>
+      </train>
+    </project>
+
+    <project name ="xor_relu" mode="regression">
+      <dataset>
+        <input>
+          <vector size="4"></vector>
+        </input>
+        <output size="1"/>
+        <data>
+          <example>0, 0, 0</example>
+          <example>0, 1, 1</example>
+          <example>1, 0, 1</example>
+          <example>1, 1, 0</example>
+        </data>
+      </dataset>
+      <network_model>
+        <layers>
+          <output act_func="bypass" cost_func="mse" bias="common">
+            <init>
+              <weight>1.7 -2.8</weight>
+              <bias>-0.5</bias>
+            </init>
+          </output>
+          <full depth="1" width="2" act_func="relu" bias="each">
+            <init>
+              <weight>1.1 1.2 1.3 1.4</weight>
+              <bias>-0.5 -0.5</bias>
+            </init>
+          </full>
+        </layers>
+      </network_model>
+      <train method="sgd" iterate="100000" rate="0.1">
+        <minibatch type="all"></minibatch>
+        <report type="full" neglist="step_end" period="1" path="dump/xor_relu.full.txt"></report>
+        <report type="brief" period="1000" path="dump/xor_relu.brief.txt"></report>
+        <report poslist="step_start cost result test" period="1000" dest="stdout"></report>
+        <report poslist="step_start cost" period="100" offset="50" dest="callback"></report>
+        <test></test>
+      </train>
+    </project>
+
+    <project name ="cifar_10_classifier" mode="classify">
+      <dataset source="TestData/cifar-10-batches-bin" mode="cifar-10">
+      </dataset>
+      <network_model>
+        <layers>
+          <output act_func="softmax" cost_func="cross_entropy" bias="common"/>
+          <full act_func="relu" width="1000"/>
+          <pooling stride="4" func="max"/>
+          <convolution width="4" height="4" channels="16" act_func="relu"/>
+        </layers>
+      </network_model>
+      <train method="sgd" iterate="100000" rate="0.1">
+        <minibatch type="random" size="100"></minibatch>
+        <report type="full" neglist="step_end" period="1" path="dump/cifar_10_classifier.full.txt"></report>
+        <report type="brief" period="1000" path="dump/cifar_10_classifier.brief.txt"></report>
+        <report poslist="step_start cost result test" period="1000" dest="stdout"></report>
+        <report poslist="step_start cost" period="100" offset="50" dest="callback"></report>
+        <test></test>
+      </train>
+    </project>
+
+    <project name ="mnist_full_1" mode="classify">
+      <dataset source="TestData/mnist" mode="mnist">
+      </dataset>
+      <network_model>
+        <layers>
+          <output act_func="softmax" cost_func="cross_entropy" bias="off"/>
+        </layers>
+      </network_model>
+      <train method="sgd" iterate="1000" rate="0.00001">
+        <minibatch type="random" size="10"></minibatch>
+        <!--report type="full" neglist="step_end" period="1" path="dump/mnist_full.full.txt"></report-->
+        <!--report type="brief" period="1000" path="dump/mnist_full.brief.txt"></report-->
+        <report poslist="step_start test_result" period="10000" path="dump/mnist_full.validate_1.txt"></report>
+        <report poslist="step_start test_result" period="100" dest="stdout"></report>
+        <!--report poslist="step_start cost" period="100" offset="50" dest="callback"></report-->
+        <!--test trainset="100" testset="100"></test-->
+        <test>
+          <validate period="100" testset="1000"></validate>
+        </test>
+      </train>
+    </project>
+
+    <project name ="mnist_full_2" mode="classify">
+      <dataset source="TestData/mnist" mode="mnist">
+      </dataset>
+      <network_model>
+        <layers>
+          <output act_func="softmax" cost_func="cross_entropy" bias="off"/>
+          <full width="300" depth="1" act_func="relu"/>
+        </layers>
+      </network_model>
+      <train method="sgd" iterate="10000" rate="0.00001">
+        <minibatch type="random" size="10"></minibatch>
+        <!--report type="full" neglist="step_end" period="1" path="dump/mnist_full.full.txt"></report-->
+        <!--report type="brief" period="1000" path="dump/mnist_full.brief.txt"></report-->
+        <!--report poslist="step_start test_result" period="1000" path="dump/mnist_full_2.validate.txt"></report-->
+        <report poslist="step_start test_result" period="1000" dest="stdout"></report>
+        <report poslist="step_start" period="10" dest="stdout"></report>
+        <!-->report poslist="step_start cost" period="1" offset="50" dest="callback"></report-->
+        <test>
+          <validate period="1000" testset="1000"></validate>
+        </test>
+      </train>
+    </project>
+
+    <project name ="mnist_full_3" mode="classify">
+      <dataset source="TestData/mnist" mode="mnist">
+      </dataset>
+      <network_model>
+        <layers>
+          <output act_func="softmax" cost_func="cross_entropy" bias="on"/>
+          <full width="20" depth="1" act_func="relu"/>
+          <!--full width="20" depth="2" act_func="relu"/-->
+        </layers>
+      </network_model>
+      <train method="sgd" iterate="100000" rate="0.00001">
+        <minibatch type="random" size="10"></minibatch>
+        <!--report type="full" neglist="step_end" period="1" path="dump/mnist_full.full.txt"></report-->
+        <!--report type="brief" period="1000" path="dump/mnist_full.brief.txt"></report-->
+        <report poslist="step_start test_result result" period="1000" path="dump/mnist_full_3.validate.txt"></report>
+        <report poslist="step_start cost test_result" period="100" dest="stdout"></report>
+        <!-->report poslist="step_start cost" period="1" offset="50" dest="callback"></report-->
+        <test>
+          <validate period="10000" testset="1000"></validate>
+        </test>
+      </train>
+    </project>
+
+    <project name ="mnist_conv_1" mode="classify">
+	  <description>
+mnist_conv_1 is a project for the convolution neural net testing.
+mnist dataset contains 60000 hand-written digital numbers(28x28).
+mnist_conv_1 consists of three layers.
+It has a 4x4 convolution layer with 20 channels.
+It also has a 2x2 max pooling layer and an output layer.
+With learning late of 0.00001 and 10 minibatch size,
+it converges to the correct result in some hundreds iteration.
+With learning late of 0.0001, it seems to converge even faster.
+	  </description>
+      <dataset source="TestData/mnist" mode="mnist">
+      </dataset>
+      <network_model>
+        <layers>
+          <output act_func="softmax" cost_func="cross_entropy" bias="off"/>
+          <pooling stride="2" func="max" act_func="bypass"/>
+          <convolution width="4" height="4" channels="20" act_func="relu"/>
+        </layers>
+      </network_model>
+     <train method="sgd" iterate="300" rate="0.00001">
+        <minibatch type="random" size="10"></minibatch>
+        <report poslist="desc step_start cost_avg test_result" period="50" dest="stdout"></report>
+        <test trainset="100" testset="100">
+          <validate period="50" testset="10"></validate>
+        </test>
+      </train>
+    </project>
+
+    <project name ="mnist_conv_2" mode="classify">
+      <dataset source="TestData/mnist" mode="mnist">
+      </dataset>
+      <network_model>
+        <layers>
+          <output act_func="softmax" cost_func="cross_entropy" bias="off"/>
+          <full width="20" depth="1" act_func="relu"/>
+          <pooling stride="4" func="max" act_func="bypass"/>
+          <convolution width="4" height="4" channels="10" act_func="relu"/>
+        </layers>
+      </network_model>
+      <train method="sgd" iterate="10000" rate="0.0001">
+        <minibatch type="random" size="10"></minibatch>
+        <!--report type="full" neglist="step_end" period="1" path="dump/mnist_conv_2.full.txt"></report-->
+        <!--report type="brief" period="1000" path="dump/mnist_conv_2.brief.txt"></report-->
+        
+        <report poslist="step_start test_result" period="1000" path="dump/mnist_conv_2.validate.txt"></report>
+        <report poslist="step_start cost test_result" period="100" dest="stdout"></report>
+        <!-->report poslist="step_start cost" period="1" offset="50" dest="callback"></report-->
+        <test>
+          <validate period="1000" trainset="10" testset="10"></validate>
+        </test>
+      </train>
+    </project>
+
+    <project name ="cifar_10_conv_1" mode="classify">
+      <dataset source="TestData/cifar-10-binary\\cifar-10-batches-bin" mode="cifar10">
+      </dataset>
+      <network_model>
+        <layers>
+          <output act_func="softmax" cost_func="cross_entropy" bias="off"/>
+          <full width="200" depth="1" act_func="relu"/>
+          <pooling stride="2" func="max" act_func="bypass"/>
+          <convolution width="4" height="4" channels="20" act_func="relu"/>
+        </layers>
+      </network_model>
+      <train method="sgd" iterate="100" rate="0.000001">
+        <minibatch type="random" size="10"></minibatch>
+        <!--report type="full" neglist="step_end" period="1" path="dump/cifar_10_conv_1.full.txt"></report-->
+        <!--report type="brief" period="1000" path="dump/cifar_10_conv_1.brief.txt"></report-->
+        <report poslist="step_start test_result" period="1000" path="dump/cifar_10_conv_1.validate.txt"></report>
+        <report poslist="step_start cost_avg test_result" period="1" dest="stdout"></report>
+        <!-->report poslist="step_start cost" period="1" offset="50" dest="callback"></report-->
+        <test>
+          <validate period="1000" trainset="100" testset="100"></validate>
+        </test>
+      </train>
+    </project>
+
+    <project name ="cifar_10_conv_2" mode="classify">
+      <dataset source="TestData/cifar-10-binary\\cifar-10-batches-bin" mode="cifar10">
+      </dataset>
+      <network_model>
+        <layers>
+          <output act_func="softmax" cost_func="cross_entropy" bias="off"/>
+          <full width="100" depth="1" act_func="sigmoid"/>
+          <pooling stride="2" func="max" act_func="bypass"/>
+          <convolution width="4" height="4" channels="2" act_func="relu"/>
+          <pooling stride="2" func="max" act_func="bypass"/>
+          <convolution width="4" height="4" channels="10" act_func="relu"/>
+        </layers>
+      </network_model>
+      <train method="sgd" iterate="10000" rate="0.0001">
+        <minibatch type="random" size="10"></minibatch>
+        <!--report type="full" neglist="step_end" period="1" path="dump/cifar_10_conv_1.full.txt"></report-->
+        <!--report type="brief" period="1000" path="dump/cifar_10_conv_1.brief.txt"></report-->
+        <report poslist="step_start test_result" period="1000" path="dump/cifar_10_conv_1.validate.txt"></report>
+        <report poslist="step_start cost test_result" period="10" dest="stdout"></report>
+        <!-->report poslist="step_start cost" period="1" offset="50" dest="callback"></report-->
+        <test>
+          <validate period="100" trainset="10" testset="10"></validate>
+        </test>
+      </train>
+    </project>
+
+    <project name ="small_conv_test" mode="regression">
+      <dataset>
+        <input>
+          <grid width="3" height="3"/>
+        </input>
+        <output size="1"></output>
+        <data>
+          <example>1 2 3 4 5 6 7 8 9 365</example>
+        </data>
+      </dataset>
+      <network_model>
+        <layers>
+          <output act_func="bypass" cost_func="mse" bias="on"/>
+          <convolution width="2" height="2" channels="2" act_func="bypass" bias="each"/>
+          <!--convolution width="2" height="2" channels="2" act_func="relu" bias="each"/-->
+        </layers>
+      </network_model>
+      <train method="sgd" iterate="300" rate="0.0001">
+        <minibatch type="all"></minibatch>
+        <report type="full" period="1" path="dump/small_conv_test.full.txt"></report>
+        <report poslist="step_start cost test_result" period="10" dest="stdout"></report>
+        <test></test>
+      </train>
+    </project>
+
+    <project name="reber_simple_1" mode="classify" type="recurrent">
+      <dataset mode="embedded-reber" sequence="in-out" evaluate="reber"></dataset>
+      <network_model>
+        <layers>
+          <output act_func="softmax" cost_func="cross_entropy" bias="on"/>
+          <recurrent width="4" act_func="tanh" bias="each"/>
+        </layers>
+      </network_model>
+      <train method="sgd" iterate="10000" rate="0.001">
+        <minibatch type="random" size="4"></minibatch>
+        <regular type="norm2_decay" dest="all" ratio="0.01"></regular>
+        <report type="full" period="1" path="dump/reber_simple_1.full.txt"></report>
+        <report poslist="step_start test_result" period="100" dest="stdout"></report>
+        <test>
+          <validate period="1000" testset="10"></validate>
+        </test>
+      </train>
+    </project>
+
+    <project name="small_recurrent_test" mode="regression" type="recurrent">
+      <dataset mode="acc_plus_1" sequence="in-out" evaluate="reber"></dataset>
+      <network_model>
+        <layers>
+          <output act_func="bypass" cost_func="mse" bias="on"/>
+          <recurrent width="1" act_func="relu" bias="each"/>
+        </layers>
+      </network_model>
+      <train method="sgd" iterate="10000" rate="0.01">
+        <minibatch type="random" size="1"></minibatch>
+        <report type="full" period="1" path="dump/small_recurrent_test.full.txt"></report>
+        <report poslist="step_start cost test_result" period="100000" dest="stdout"></report>
+        <test>
+          <validate period="1000" testset="10"></validate>
+        </test>
+      </train>
+    </project>
+  </projects>
+</Kodell>
