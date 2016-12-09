@@ -1,0 +1,124 @@
+.SUFFIXES:	.cpp .o
+
+CC			= g++
+
+DEBUG		= -g
+#DEBUG		= -O2
+
+DO_SUFFIX	= dll.o
+DO_CFLAGS	= -m64 -fPIC
+DO_LFLAGS	= -m64 -shared
+
+LIBS		= -ldl -lm -lutil 
+
+CFLAGS		= -m64 -c -fno-strict-aliasing -Wall $(DEFS) $(DEBUG) -D__SDCLIB_NAMESPACE="sdclib" $(INC)
+
+LFLAGS		= -m64 -O2
+
+DO_SUFFIX	= dll.o
+
+.SUFFIXES: .cpp .c .o .$(DO_SUFFIX)
+
+LIB_KODELL	= ./libkodell.a
+MOD_KODELL	= ./libkodell.so
+KODELL_TEST = ./kodell_test
+
+objs_appmain = \
+	kodell/apimain/kodellmain.o
+
+objs_config = \
+	kodell/config/config_manager.o \
+	kodell/config/tinyxml2.o
+
+objs_dataset = \
+	kodell/dataset/dataset.o \
+	kodell/dataset/minibatch.o
+
+objs_engine = \
+	kodell/engine/learning_engine.o \
+	kodell/engine/layer.o \
+	kodell/engine/full_connection_layer.o \
+	kodell/engine/convolution_layer.o \
+	kodell/engine/pooling_layer.o \
+	kodell/engine/recurrent_layer.o \
+	kodell/engine/regular.o \
+	kodell/engine/context_stack.o
+
+objs_math = \
+	kodell/math/dimension.o \
+	kodell/math/tensor.o
+
+objs_project = \
+	kodell/project/project_manager.o \
+	kodell/project/network_model.o \
+	kodell/project/train_mode.o \
+	kodell/project/reporter_pool.o \
+	kodell/project/reporter.o \
+	kodell/project/test_config.o
+
+objs_util = \
+	kodell/util/util.o \
+	kodell/util/xml_util.o
+
+objs_test = \
+	kodell/test/test.o
+
+objs_kodell = \
+	$(objs_appmain) \
+	$(objs_config) \
+	$(objs_dataset) \
+	$(objs_engine) \
+	$(objs_math) \
+	$(objs_project) \
+	$(objs_util) \
+
+objs_mod_kodell = \
+	$(objs_kodell:.o=.$(DO_SUFFIX))
+
+all:	$(LIB_KODELL) $(MOD_KODELL) $(KODELL_TEST)
+
+$(LIB_KODELL) : $(objs_kodell)
+	@echo "	making archive '$@'..."
+	@cp ./kodell/api/kodellapi.h .
+	@cp ./kodell/api/kodelldatatypes.h .
+	@ar $(AFLAGS) cr ./$@ $(objs_kodell)
+	@ranlib ./$@
+	@echo " "
+	@echo "	'$@' created."
+	@echo " "
+
+$(MOD_KODELL) : $(objs_mod_kodell)
+	@echo "	making '$@' ..."
+	@$(CC) $(DO_LFLAGS) $(LFLAGS) -o $@ $(objs_mod_kodell) $(LIBS)
+	@echo " "
+	@echo "	'$@' created."
+	@echo " "
+
+$(KODELL_TEST) : $(LIB_KODELL) $(objs_test)
+	@echo " "
+	@$(CC) $(LFLAGS) -o $@ $(objs_test) $(LIB_KODELL) $(LIBS)
+	@echo "	'$@' created."
+
+.cpp.o:
+	@echo "	compiling '$<' ..."
+	@$(CC) -o ${<:.cpp=.o} $(CFLAGS) $<
+
+.cpp.$(DO_SUFFIX):
+	@echo "	dll compiling '$<' ..."
+	@$(CC) -o ${<:.cpp=.$(DO_SUFFIX)} $(CFLAGS) $(DO_CFLAGS) $<
+
+.c.o:
+	@echo "	compiling '$<' ..."
+	@$(CC) -o ${<:.c=.o} $(CFLAGS) $<
+
+.c.$(DO_SUFFIX):
+	@echo "	dll compiling '$<' ..."
+	$(CC) -o ${<:.c=.$(DO_SUFFIX)} $(CFLAGS) $(DO_CFLAGS) $<
+
+clean:
+	@echo "	deleting object files and library files ..."
+	@rm -rf *.o core $(objs_kodell) $(objs_mod_kodell) $(objs_test) $(LIB_KODELL)
+
+new:
+	$(MAKE) clean
+	$(MAKE)
