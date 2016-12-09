@@ -79,8 +79,8 @@ all:	$(LIB_KODELL) $(MOD_KODELL) $(KODELL_TEST)
 
 $(LIB_KODELL) : $(objs_kodell)
 	@echo "	making archive '$@'..."
-	@cp ./kodell/api/kodellapi.h .
-	@cp ./kodell/api/kodelldatatypes.h .
+#	@cp ./kodell/api/kodellapi.h .
+#	@cp ./kodell/api/kodelldatatypes.h .
 	@ar $(AFLAGS) cr ./$@ $(objs_kodell)
 	@ranlib ./$@
 	@echo " "
@@ -117,7 +117,8 @@ $(KODELL_TEST) : $(LIB_KODELL) $(objs_test)
 
 clean:
 	@echo "	deleting object files and library files ..."
-	@rm -rf *.o core $(objs_kodell) $(objs_mod_kodell) $(objs_test) $(LIB_KODELL)
+	@rm -rf *.o core $(objs_kodell) $(objs_mod_kodell) $(objs_test) 
+	@rm -rf $(LIB_KODELL) $(MOD_KODELL) $(KODELL_TEST)
 
 new:
 	$(MAKE) clean
