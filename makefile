@@ -52,6 +52,7 @@ test:
 
 link:
 	$(CXX) -o kodell_test -lm *.o
+
 clean:
 	rm -rf *.o core
 
