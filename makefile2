@@ -11,7 +11,7 @@ DO_LFLAGS	= -m64 -shared
 
 LIBS		= -ldl -lm -lutil 
 
-CFLAGS		= -m64 -c -fno-strict-aliasing -Wall $(DEFS) $(DEBUG) -D__SDCLIB_NAMESPACE="sdclib" $(INC)
+CFLAGS		= -m64 -c -fno-strict-aliasing -Wall $(DEFS) $(DEBUG) -D__SDCLIB_NAMESPACE="sdclib"
 
 LFLAGS		= -m64 -O2
 
